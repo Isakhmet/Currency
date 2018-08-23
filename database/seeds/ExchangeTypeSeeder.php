@@ -11,24 +11,24 @@ class ExchangeTypeSeeder extends Seeder
      */
     public function run()
     {
-        if(\App\Models\ExchangeType::all()->count() === 0){
+        if (\App\Models\ExchangeType::all()->count() === 0) {
 
             $date = date('Y-m-d H:i:s');
 
             $data = [
                 [
                     'title' => 'Наличный',
-                    'name'=> 'cash',
+                    'name' => 'cash',
                     'created_at' => $date
                 ],
                 [
                     'title' => 'По платежным карточкам',
-                    'name'=> 'cards',
+                    'name' => 'cards',
                     'created_at' => $date
                 ],
                 [
                     'title' => 'Безналичный',
-                    'name'=> 'transfer',
+                    'name' => 'transfer',
                     'created_at' => $date
                 ],
 
@@ -36,7 +36,7 @@ class ExchangeTypeSeeder extends Seeder
             /** @noinspection PhpUndefinedMethodInspection */
             \App\Models\ExchangeType::insert($data);
             $this->command->info('Таблица типов обмена заполнена');
-        }else{
+        } else {
             $this->command->warn('Таблица типов обмена уже заполнена');
         }
     }

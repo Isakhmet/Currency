@@ -14,32 +14,32 @@ class CompanySeeder extends Seeder
      */
     public function run()
     {
-        if(\App\Models\Company::all()->count() === 0){
+        if (\App\Models\Company::all()->count() === 0) {
 
             $date = date('Y-m-d H:i:s');
 
             $data = [
                 [
-                    'name'=> 'Банк Центр Кредит',
+                    'name' => 'Банк Центр Кредит',
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'МиГ',
+                    'name' => 'МиГ',
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'Нурбанк',
+                    'name' => 'Нурбанк',
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'Банк РБК',
+                    'name' => 'Банк РБК',
                     'created_at' => $date
                 ],
             ];
             /** @noinspection PhpUndefinedMethodInspection */
             \App\Models\Company::insert($data);
             $this->command->info('Таблица компаний заполнена');
-        }else{
+        } else {
             $this->command->warn('Таблица компаний уже заполнена');
         }
     }

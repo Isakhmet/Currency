@@ -11,300 +11,300 @@ class CurrencySeeder extends Seeder
      */
     public function run()
     {
-        if(\App\Models\Currency::all()->count() === 0){
+        if (\App\Models\Currency::all()->count() === 0) {
 
             $date = date('Y-m-d H:i:s');
 
             $data = [
                 [
-                    'name'=> 'AUD',
+                    'name' => 'AUD',
                     'title' => 'Австралийский доллар',
                     'sign' => '$',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'GBP',
+                    'name' => 'GBP',
                     'title' => 'Английский фунт стерлингов',
                     'sign' => '£',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'DKK',
+                    'name' => 'DKK',
                     'title' => 'Датская крона',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'AED',
+                    'name' => 'AED',
                     'title' => 'Дирхам ОАЭ',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'USD',
+                    'name' => 'USD',
                     'title' => 'Доллар США',
                     'sign' => '$',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'EUR',
+                    'name' => 'EUR',
                     'title' => 'Евро',
                     'sign' => '€',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'CAD',
+                    'name' => 'CAD',
                     'title' => 'Канадский доллар',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'CNY',
+                    'name' => 'CNY',
                     'title' => 'Китайский юань',
                     'sign' => '¥',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'KWD',
+                    'name' => 'KWD',
                     'title' => 'Кувейтский динар',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'KGS',
+                    'name' => 'KGS',
                     'title' => 'Кыргызский сом',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'LVL',
+                    'name' => 'LVL',
                     'title' => 'Латвийский лат',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'MDL',
+                    'name' => 'MDL',
                     'title' => 'Молдавский лей',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'NOK',
+                    'name' => 'NOK',
                     'title' => 'Норвежская крона',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'SAR',
+                    'name' => 'SAR',
                     'title' => 'Риял Саудовской Аравии',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'RUB',
+                    'name' => 'RUB',
                     'title' => 'Российский рубль',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'XDR',
+                    'name' => 'XDR',
                     'title' => 'СДР',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'SGD',
+                    'name' => 'SGD',
                     'title' => 'Сингапурский доллар ',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'TRL',
+                    'name' => 'TRL',
                     'title' => 'Турецкая лира',
                     'sign' => '',
                     'count' => 1000,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'UZS',
+                    'name' => 'UZS',
                     'title' => 'Узбекский сум',
                     'sign' => '',
                     'count' => 100,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'UAH',
+                    'name' => 'UAH',
                     'title' => 'Украинская гривна',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'SEK',
+                    'name' => 'SEK',
                     'title' => 'Шведская крона',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'CHF',
+                    'name' => 'CHF',
                     'title' => 'Швейцарский франк',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'EEK',
+                    'name' => 'EEK',
                     'title' => 'Эстонская крона',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'KRW',
+                    'name' => 'KRW',
                     'title' => 'Южно-корейский вон',
                     'sign' => '',
                     'count' => 100,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'JPY',
+                    'name' => 'JPY',
                     'title' => 'Японская йена',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'BYN',
+                    'name' => 'BYN',
                     'title' => 'Белорусский рубль',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'PLN',
+                    'name' => 'PLN',
                     'title' => 'Польский злотый',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'ZAR',
+                    'name' => 'ZAR',
                     'title' => 'Южно-африканский ранд',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'TRY',
+                    'name' => 'TRY',
                     'title' => 'Турецкая лира',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'HUF',
+                    'name' => 'HUF',
                     'title' => 'Венгерский форинт',
                     'sign' => '',
                     'count' => 10,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'CZK',
+                    'name' => 'CZK',
                     'title' => 'Чешская крона',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'TJS',
+                    'name' => 'TJS',
                     'title' => 'Таджикский сомони',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'HKD',
+                    'name' => 'HKD',
                     'title' => 'Гонконгский доллар',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'BRL',
+                    'name' => 'BRL',
                     'title' => 'Бразильский реал',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'MYR',
+                    'name' => 'MYR',
                     'title' => 'Малазийский ринггит',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'AZN',
+                    'name' => 'AZN',
                     'title' => 'Азербайджанский манат',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'INR',
+                    'name' => 'INR',
                     'title' => 'Индийская рупия',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'THB',
+                    'name' => 'THB',
                     'title' => 'Тайский бат',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'AMD',
+                    'name' => 'AMD',
                     'title' => 'Армянский драм',
                     'sign' => '',
                     'count' => 10,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'GEL',
+                    'name' => 'GEL',
                     'title' => 'Грузинский лари',
                     'sign' => '',
                     'count' => 1,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'IRR',
+                    'name' => 'IRR',
                     'title' => 'Иранский риал',
                     'sign' => '',
                     'count' => 1000,
                     'created_at' => $date
                 ],
                 [
-                    'name'=> 'MXN',
+                    'name' => 'MXN',
                     'title' => 'Мексиканский песо',
                     'sign' => '',
                     'count' => 1,
@@ -314,7 +314,7 @@ class CurrencySeeder extends Seeder
             /** @noinspection PhpUndefinedMethodInspection */
             \App\Models\Currency::insert($data);
             $this->command->info('Таблица валют заполнена');
-        }else{
+        } else {
             $this->command->warn('Таблица валют уже заполнена');
         }
     }
