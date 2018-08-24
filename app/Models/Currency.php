@@ -23,8 +23,16 @@ class Currency extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function exchangeLink()
+    public function exchangeLinks()
     {
         return $this->hasMany(CompanyLink::class, 'currency_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function exchangeRates()
+    {
+        return $this->hasMany(ExchangeRate::class, 'currency_id', 'id');
     }
 }

@@ -21,8 +21,16 @@ class Company extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function exchangeLink()
+    public function exchangeLinks()
     {
         return $this->hasMany(CompanyLink::class, 'company_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function exchangeRates()
+    {
+        return $this->hasMany(ExchangeRate::class, 'company_id', 'id');
     }
 }
