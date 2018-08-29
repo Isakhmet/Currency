@@ -21,18 +21,22 @@ class CompanySeeder extends Seeder
             $data = [
                 [
                     'name' => 'Банк Центр Кредит',
+                    'code' => 'bcc',
                     'created_at' => $date
                 ],
                 [
                     'name' => 'МиГ',
+                    'code' => 'mig',
                     'created_at' => $date
                 ],
                 [
                     'name' => 'Нурбанк',
+                    'code' => 'nur',
                     'created_at' => $date
                 ],
                 [
                     'name' => 'Банк РБК',
+                    'code' => 'rbk',
                     'created_at' => $date
                 ],
             ];
