@@ -5,6 +5,7 @@ namespace App\Classes\Process;
 
 
 use App\Classes\Process\Support\CheckProcess;
+use App\Classes\Process\Support\FindDataProcess;
 use App\Classes\Process\Support\GetDataProcess;
 use App\Classes\Process\Support\ParseProcess;
 use App\Classes\Process\Support\ResolveProcess;
@@ -34,15 +35,16 @@ class GetCurrencyRateProcess
         $context = $this->context;
 
         try {
+            $context = (new FindDataProcess($context, $this->company_id, $this->exchange_type_id))->run();
             $context = (new ResolveProcess($context))->run();
+
             $context = (new GetDataProcess($context))->run();
-
             $context = (new CheckProcess($context))->run();
-
             $context = (new ParseProcess($context))->run();
+
             $context = (new SaveProcess($context))->run();
         } catch (\Exception $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), [$exception->getLine(), $exception->getFile()]);
         }
 
         return $context;

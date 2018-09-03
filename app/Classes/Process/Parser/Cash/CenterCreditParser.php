@@ -20,7 +20,7 @@ class CenterCreditParser extends AbstractDOMDocument implements ParserInterface
      */
     public function parse(string $data): array
     {
-        $rates = [];
+        $exchange = [];
 
         try {
             $elements = [];
@@ -56,14 +56,14 @@ class CenterCreditParser extends AbstractDOMDocument implements ParserInterface
             }
 
             for ($i = 0; $i < count($title); $i++) {
-                $rates[$title[$i]][] = $currency[$i * 2];
-                $rates[$title[$i]][] = $currency[$i * 2 + 1];
+                $exchange[substr($title[$i], 0, 3)][] = $currency[$i * 2];
+                $exchange[substr($title[$i], 0, 3)][] = $currency[$i * 2 + 1];
             }
 
         } catch (\Exception $exception) {
             Log::error($exception->getMessage());
         }
 
-        return $rates;
+        return $exchange;
     }
 }

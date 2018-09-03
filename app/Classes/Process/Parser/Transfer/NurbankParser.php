@@ -18,34 +18,33 @@ class NurbankParser extends AbstractDOMDocument implements ParserInterface
      */
     public function parse(string $data): array
     {
-        $rates = [];
+        $exchange = [];
 
         try {
 
             $element = (new NurbankParser())->getDocument($data, $this->selector);
             $currency_info = [];
-            $currency = ['USD', 'EUR', 'RUR', 'CHF', 'CNY', 'GBP'];
+            $currency = ['USD', 'EUR', 'RUB', 'CHF', 'CNY', 'GBP'];
 
             foreach ($element as $node) {
                 $var = preg_replace("/[^a-zA-Z0-9\,]/", "", $node->nodeValue);
                 $var = str_replace(',', '.', $var);
                 $currency_info[] = $var;
             }
+            array_search('RUR', $currency_info) ? $currency_info[array_search('RUR', $currency_info)] = 'RUB' : null;
 
             foreach ($currency as $curr) {
                 $index = array_search($curr, $currency_info);
 
                 if (is_numeric($currency_info[$index + 1]) && is_numeric($currency_info[$index + 2])) {
-                    $rates[$curr][] = $currency_info[$index + 1];
-                    $rates[$curr][] = $currency_info[$index + 2];
+                    $exchange[$curr][] = $currency_info[$index + 1];
+                    $exchange[$curr][] = $currency_info[$index + 2];
                 }
             }
-
         } catch (\Exception $exception) {
             Log::error($exception->getMessage());
-            echo $exception->getMessage();
         }
 
-        return $rates;
+        return $exchange;
     }
 }

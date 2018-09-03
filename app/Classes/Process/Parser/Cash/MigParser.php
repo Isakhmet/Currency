@@ -22,7 +22,7 @@ class MigParser extends AbstractDOMDocument implements ParserInterface
      */
     public function parse(string $data): array
     {
-        $currency = [];
+        $exchange = [];
 
         try {
 
@@ -52,8 +52,8 @@ class MigParser extends AbstractDOMDocument implements ParserInterface
 
 
             for ($i = 0; $i < count($title); $i++) {
-                $currency[$title[$i]][] = $buy[$i];
-                $currency[$title[$i]][] = $sell[$i];
+                $exchange[$title[$i]][] = $buy[$i];
+                $exchange[$title[$i]][] = $sell[$i];
             }
 
 
@@ -61,6 +61,6 @@ class MigParser extends AbstractDOMDocument implements ParserInterface
             Log::error($exception->getMessage());
             echo $exception->getMessage();
         }
-        return $currency;
+        return $exchange;
     }
 }

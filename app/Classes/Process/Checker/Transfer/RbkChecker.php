@@ -40,10 +40,10 @@ class RbkChecker extends AbstractDOMDocument implements CheckerInterface
             }
 
             $currency_date = substr($date, 5);
-            $today = (new \DateTime())->format('d.m.y');
+            $today = (new \DateTime())->format('d.m.Y');
 
             if (strtotime($currency_date) != strtotime($today)) {
-                throw new \Exception('Проверка не прошла. Даты не совпадают');
+                throw new \Exception('РБК. Проверка не прошла. Даты не совпадают');
             }
 
             $arr = array_diff($arr, ['']);
@@ -59,7 +59,7 @@ class RbkChecker extends AbstractDOMDocument implements CheckerInterface
             }
 
             if (empty($checker)) {
-                throw new \Exception('Структура сайта изменилась, либо нету данных');
+                throw new \Exception('РБК. Структура сайта изменилась, либо нету данных');
             }
 
         } catch (\Exception $exception) {

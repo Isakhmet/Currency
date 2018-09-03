@@ -24,7 +24,6 @@ class MigChecker extends AbstractDOMDocument implements CheckerInterface
     public function check(string $data)
     {
         try {
-
             $elements = [];
             $title = [];
             $currency = [];

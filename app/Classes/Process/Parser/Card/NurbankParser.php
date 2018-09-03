@@ -19,7 +19,7 @@ class NurbankParser extends AbstractDOMDocument implements ParserInterface
      */
     public function parse(string $data): array
     {
-        $rates = [];
+        $exchange = [];
 
         try {
 
@@ -32,22 +32,18 @@ class NurbankParser extends AbstractDOMDocument implements ParserInterface
                 $var = str_replace(',', '.', $var);
                 $currency_info[] = $var;
             }
-
             foreach ($currency as $curr) {
                 $index = array_search($curr, $currency_info);
 
                 if (is_numeric($currency_info[$index + 1]) && is_numeric($currency_info[$index + 2])) {
-                    $rates[$curr][] = $currency_info[$index + 1];
-                    $rates[$curr][] = $currency_info[$index + 2];
+                    $exchange[$curr][] = $currency_info[$index + 1];
+                    $exchange[$curr][] = $currency_info[$index + 2];
                 }
             }
-
-
         } catch (\Exception $exception) {
             Log::error($exception->getMessage());
             echo $exception->getMessage();
         }
-
-        return $rates;
+        return $exchange;
     }
 }

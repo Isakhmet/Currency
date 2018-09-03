@@ -18,7 +18,7 @@ class RbkParser extends AbstractDOMDocument implements ParserInterface
      */
     public function parse(string $data): array
     {
-        $rates = [];
+        $exchange = [];
 
         try {
 
@@ -40,17 +40,14 @@ class RbkParser extends AbstractDOMDocument implements ParserInterface
             foreach ($title_list as $list) {
                 $index = array_search($list, $currency_info);
                 if (is_numeric($currency_info[$index + 1]) && is_numeric($currency_info[$index + 2])) {
-                    $rates[substr($list, 0, 3)][] = $currency_info[$index + 1];
-                    $rates[substr($list, 0, 3)][] = $currency_info[$index + 2];
+                    $exchange[substr($list, 0, 3)][] = $currency_info[$index + 1];
+                    $exchange[substr($list, 0, 3)][] = $currency_info[$index + 2];
                 }
             }
-
-            dd($rates);
-
         } catch (\Exception $exception) {
             Log::error($exception->getMessage());
         }
 
-        return $rates;
+        return $exchange;
     }
 }

@@ -14,11 +14,12 @@ class ExchangeRate extends Model
      * @var array
      */
     protected $fillable = [
-        'buy',
-        'sell',
+
         'company_id',
         'exchange_type_id',
         'currency_id',
+        'buy',
+        'sell',
         'is_exchange'
     ];
 

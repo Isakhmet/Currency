@@ -54,10 +54,7 @@ class NurbankChecker extends AbstractDOMDocument implements CheckerInterface
                 }
             }
 
-            if (!empty($rates)) {
-                Log::info('Проверка прошла успешно');
-                echo 'Проверка прошла успешно';
-            } else {
+            if (empty($rates)) {
                 throw new \Exception('Проверка не прошла. Нет данных о валютах или структура сайта устарела');
             }
 

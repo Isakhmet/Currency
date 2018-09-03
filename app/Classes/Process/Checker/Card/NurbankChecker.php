@@ -50,14 +50,13 @@ class NurbankChecker extends AbstractDOMDocument implements CheckerInterface
                 if (is_numeric($currency_info[$index + 1]) && is_numeric($currency_info[$index + 2])) {
                     $rates[$curr][] = $currency_info[$index + 1];
                     $rates[$curr][] = $currency_info[$index + 2];
+                } else {
+                    throw new \Exception('Евразиский банк. Значение валют не числовой');
                 }
             }
 
 
-            if (!empty($rates)) {
-                Log::info('Проверка прошла успешно');
-                echo 'Проверка прошла успешно';
-            } else {
+            if (empty($rates)) {
                 throw new \Exception('Проверка не прошла. Нет данных о валютах или структура сайта устарела');
             }
 
