@@ -99,4 +99,21 @@ return [
             'method' => '',
         ]
     ],
+    'sber' => [
+        'card' => [
+            'checker' => '',
+            'parser' => '',
+            'method' => '',
+        ],
+        'cash' => [
+            'checker' => App\Classes\Process\Checker\Cash\EurasianBankChecker::class,
+            'parser' => App\Classes\Process\Parser\Cash\EurasianBankParser::class,
+            'method' => 'GET',
+        ],
+        'transfer' => [
+            'checker' => App\Classes\Process\Checker\Transfer\SberbankChecker::class,
+            'parser' => App\Classes\Process\Parser\Transfer\SberbankParser::class,
+            'method' => 'GET',
+        ]
+    ],
 ];
