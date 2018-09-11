@@ -6,14 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class GetCurrency extends Controller
 {
-    public function getAllBanks()
+    public function getAllBanks() : array
     {
 
-        $banks = (new Company())->whereHas('exchangeRates', function ($query) {
+        $banks = Company::whereHas('exchangeRates', function ($query) {
+            /**
+             * @var $query \Illuminate\Database\Query\Builder
+             */
             $query->where('exchange_type_id', 1);
         })->where('type', 'bank')->get(['id','name']);
 
@@ -55,7 +59,7 @@ class GetCurrency extends Controller
             ];
 
             $currency = [];
-            $currency['updated_at'] = null;
+            $currency['updated_at'] = Carbon::now()->subMonth(1);
 
             foreach ($current_company_exchanges as $currency_id => $currency){
                 $currency_title = Str::lower($currencies_titles[$currency_id]);
