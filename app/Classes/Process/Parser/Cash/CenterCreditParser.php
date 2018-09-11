@@ -3,11 +3,11 @@
 
 namespace App\Classes\Process\Parser\Cash;
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class CenterCreditParser extends AbstractDOMDocument implements ParserInterface
+class CenterCreditParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = [
         'title' => 'div.s_table_over table.s_table tbody tr th',

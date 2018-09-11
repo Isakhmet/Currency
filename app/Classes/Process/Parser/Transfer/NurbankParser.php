@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Transfer;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class NurbankParser extends AbstractDOMDocument implements ParserInterface
+class NurbankParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = 'div#data2 table.table tr td';
 

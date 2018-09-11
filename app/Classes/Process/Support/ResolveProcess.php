@@ -22,7 +22,7 @@ class ResolveProcess extends AbstractContextProcess
             throw new \RuntimeException('invalid exchange type name');
         }
 
-        if ($company_code == 'ntb') {
+        if ($company_code == 'nbr' || $company_code == 'kase') {
             $context->setIsExchange(false);
         } else {
             $context->setIsExchange(true);

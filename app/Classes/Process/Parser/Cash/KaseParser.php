@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Cash;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class KaseParser extends AbstractDOMDocument implements ParserInterface
+class KaseParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = 'div.currency-tabs__item';
 

@@ -4,64 +4,62 @@
 namespace App\Classes\Process\Checker\Card;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Contracts\CheckerInterface;
 use Illuminate\Support\Facades\Log;
 
-class NurbankChecker extends AbstractDOMDocument implements CheckerInterface
+class NurbankChecker extends AbstractDomDocument implements CheckerInterface
 {
-    private $selector = 'div#data3 table.table tr td';
-    private $date_selector = 'div#data3 p span';
+    private $selector = [
+        'structure' => 'div#data3 table.table tr td',
+        'date' => 'div#data3 p span'
+    ];
 
     /**
      * @param string $data
      */
     public function check(string $data)
     {
+        $elements = null;
+        foreach ($this->selector as $element) {
+            $elements[] = NurbankChecker::getDocument($data, $element);
+        }
 
-        try {
+        $currency_date = explode(' ', $elements[1]->item(0)->nodeValue);
+        $today = (new \DateTime)->format('d');
 
-            $date_element = (new NurbankChecker())->getDocument($data, $this->date_selector);
-            $date = explode(' ', $date_element->item(0)->nodeValue);
+        $check_date = $currency_date[0] == $today ? true : false;
 
-            $now = new \DateTime();
-            $now = $now->format('d');
+        if (!$check_date) {
+            throw new \RuntimeException('Нурбанк. Проверка не прошла. Даты не совпадают');
+        }
 
-            $check_date = $date[0] == $now ? true : false;
+        $currency_info = null;
+        foreach ($elements[0] as $node) {
+            $var = preg_replace("/[^a-zA-Z0-9\,]/", "", $node->nodeValue);
+            $var = str_replace(',', '.', $var);
+            $currency_info[] = $var;
+        }
+        $currency = ['USD', 'EUR', 'RUR', 'CHF', 'CNY', 'GBP'];
+        $rates = null;
+        foreach ($currency as $curr) {
+            $index = array_search($curr, $currency_info);
 
-            if (!$check_date) {
-                throw new \Exception('Проверка не прошла. Даты не совпадают');
-            }
-
-            $element = (new NurbankChecker())->getDocument($data, $this->selector);
-            $currency_info = [];
-            $currency = ['USD', 'EUR', 'RUR', 'CHF', 'CNY', 'GBP'];
-            $rates = [];
-
-            foreach ($element as $node) {
-                $var = preg_replace("/[^a-zA-Z0-9\,]/", "", $node->nodeValue);
-                $var = str_replace(',', '.', $var);
-                $currency_info[] = $var;
-            }
-
-            foreach ($currency as $curr) {
-                $index = array_search($curr, $currency_info);
-
+            if (is_numeric($index)) {
                 if (is_numeric($currency_info[$index + 1]) && is_numeric($currency_info[$index + 2])) {
                     $rates[$curr][] = $currency_info[$index + 1];
                     $rates[$curr][] = $currency_info[$index + 2];
                 } else {
-                    throw new \Exception('Евразиский банк. Значение валют не числовой');
+                    Log::info("Нурбанк. $curr значение валют не числовой или нету данных");
                 }
+            } else {
+                Log::info("Нурбанк. $curr нету данных по этой валюте");
             }
-
-
-            if (empty($rates)) {
-                throw new \Exception('Проверка не прошла. Нет данных о валютах или структура сайта устарела');
-            }
-
-        } catch (\Exception $exception) {
-            Log::error($exception->getMessage());
         }
+
+        if (empty($rates)) {
+            throw new \RuntimeException('Нурбанк. Проверка не прошла. Нет данных о валютах или структура сайта устарела');
+        }
+
     }
 }

@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Transfer;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class SberbankParser extends AbstractDOMDocument implements ParserInterface
+class SberbankParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = 'table.quotes_oms_extended_table tbody ';
 

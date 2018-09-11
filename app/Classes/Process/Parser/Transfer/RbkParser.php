@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Transfer;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class RbkParser extends AbstractDOMDocument implements ParserInterface
+class RbkParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = 'div.desktop';
 

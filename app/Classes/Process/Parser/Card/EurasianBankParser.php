@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Card;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class EurasianBankParser extends AbstractDOMDocument implements ParserInterface
+class EurasianBankParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = 'div.exchange table';
 

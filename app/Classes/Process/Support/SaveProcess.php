@@ -26,7 +26,7 @@ class SaveProcess extends AbstractContextProcess
                     'exchange_type_id' => $exchange_type_id,
                     'currency_id' => $currency->where('name', $key)->get(['id'])[0]->id,
                     'is_exchange' => $context->getIsExchange(),
-                    'buy' => $result[$key][0],
+                    'sell' => $result[$key][0],
                 ]);
             } else {
                 $exchange_rate->create([

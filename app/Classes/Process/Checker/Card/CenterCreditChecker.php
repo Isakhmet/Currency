@@ -4,10 +4,10 @@
 namespace App\Classes\Process\Checker\Card;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Contracts\CheckerInterface;
 
-class CenterCreditChecker extends AbstractDOMDocument implements CheckerInterface
+class CenterCreditChecker extends AbstractDomDocument implements CheckerInterface
 {
     private $selector = [
         'title' => 'div.s_table_over table.s_table tbody tr th',
@@ -22,7 +22,7 @@ class CenterCreditChecker extends AbstractDOMDocument implements CheckerInterfac
     {
         $elements = null;
         foreach ($this->selector as $element) {
-            $elements[] = (new CenterCreditChecker())->getDocument($data, $element);
+            $elements[] = CenterCreditChecker::getDocument($data, $element);
         }
 
         $title = null;
@@ -41,14 +41,14 @@ class CenterCreditChecker extends AbstractDOMDocument implements CheckerInterfac
         $today = (new \DateTime())->format('d.m.y');
 
         if (strtotime($currency_date) != strtotime($today)) {
-            throw new \RuntimeException('Проверка не прошла. Даты не совпадают');
+            throw new \RuntimeException('ЦентрКредит. Проверка не прошла. Даты не совпадают');
         }
 
         $title = array_diff($title, ['']);
         $title = array_values($title);
 
         if (!count($title) == 9 && $title[6] == 'USD') {
-            throw new \RuntimeException('Структура сайта изменилась, либо нету данных');
+            throw new \RuntimeException('ЦентрКредит. Структура сайта изменилась, либо нету данных');
         }
 
         $currency = null;
@@ -60,7 +60,7 @@ class CenterCreditChecker extends AbstractDOMDocument implements CheckerInterfac
 
         foreach ($currency as $item) {
             if (!is_numeric($item)) {
-                throw new \RuntimeException('Значение валют не верное');
+                throw new \RuntimeException('ЦентрКредит. Значение валют не верное');
             }
         }
 

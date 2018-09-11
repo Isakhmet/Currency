@@ -23,7 +23,7 @@ class ExchangeTypeSeeder extends Seeder
                 ],
                 [
                     'title' => 'По платежным карточкам',
-                    'name' => 'cards',
+                    'name' => 'card',
                     'created_at' => $date
                 ],
                 [

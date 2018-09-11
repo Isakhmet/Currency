@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Cash;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class NationalBankParser extends AbstractDOMDocument implements ParserInterface
+class NationalBankParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = 'div.roundborders table.gen4 tr td';
 

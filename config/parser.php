@@ -67,7 +67,7 @@ return [
             'method' => 'POST',
         ]
     ],
-    'ntb' => [
+    'nbr' => [
         'card' => [
             'checker' => '',
             'parser' => '',
@@ -82,7 +82,7 @@ return [
             'parser' => '',
         ]
     ],
-    'eur' => [
+    'eub' => [
         'card' => [
             'checker' => App\Classes\Process\Checker\Card\EurasianBankChecker::class,
             'parser' => App\Classes\Process\Parser\Card\EurasianBankParser::class,
@@ -106,14 +106,31 @@ return [
             'method' => '',
         ],
         'cash' => [
-            'checker' => App\Classes\Process\Checker\Cash\EurasianBankChecker::class,
-            'parser' => App\Classes\Process\Parser\Cash\EurasianBankParser::class,
+            'checker' => App\Classes\Process\Checker\Cash\SberbankChecker::class,
+            'parser' => App\Classes\Process\Parser\Cash\SberbankParser::class,
             'method' => 'GET',
         ],
         'transfer' => [
             'checker' => App\Classes\Process\Checker\Transfer\SberbankChecker::class,
             'parser' => App\Classes\Process\Parser\Transfer\SberbankParser::class,
             'method' => 'GET',
+        ]
+    ],
+    'kase' => [
+        'card' => [
+            'checker' => '',
+            'parser' => '',
+            'method' => '',
+        ],
+        'cash' => [
+            'checker' => App\Classes\Process\Checker\Cash\KaseChecker::class,
+            'parser' => App\Classes\Process\Parser\Cash\KaseParser::class,
+            'method' => 'GET',
+        ],
+        'transfer' => [
+            'checker' => '',
+            'parser' => '',
+            'method' => '',
         ]
     ],
 ];

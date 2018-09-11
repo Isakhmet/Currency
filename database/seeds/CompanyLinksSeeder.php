@@ -17,28 +17,28 @@ class CompanyLinksSeeder extends Seeder
 
             $data = [
                 [
-                    'url' => 'https://www.bcc.kz',
+                    'url' => 'https://www.bcc.kz/about/kursy-valyut/',
                     'company_id' => '1',
                     'exchange_type_id' => '1',
                     'currency_id' => null,
                     'created_at' => $date
                 ],
                 [
-                    'url' => 'https://www.bcc.kz',
+                    'url' => 'https://www.bcc.kz/about/kursy-valyut/',
                     'company_id' => '1',
                     'exchange_type_id' => '2',
                     'currency_id' => null,
                     'created_at' => $date
                 ],
                 [
-                    'url' => 'https://www.bcc.kz',
+                    'url' => 'https://www.bcc.kz/about/kursy-valyut/',
                     'company_id' => '1',
                     'exchange_type_id' => '3',
                     'currency_id' => null,
                     'created_at' => $date
                 ],
                 [
-                    'url' => 'https://mig.kz',
+                    'url' => 'https://mig.kz/additional#main',
                     'company_id' => '2',
                     'exchange_type_id' => '1',
                     'currency_id' => null,
@@ -61,14 +61,49 @@ class CompanyLinksSeeder extends Seeder
                 [
                     'url' => 'https://www.bankrbk.kz/rus',
                     'company_id' => '4',
+                    'exchange_type_id' => '3',
+                    'currency_id' => null,
+                    'created_at' => $date
+                ],
+                [
+                    'url' => 'http://www.nationalbank.kz/?furl=cursFull&switch=rus',
+                    'company_id' => '5',
                     'exchange_type_id' => '1',
                     'currency_id' => null,
                     'created_at' => $date
                 ],
                 [
-                    'url' => 'https://www.bankrbk.kz/rus',
-                    'company_id' => '4',
+                    'url' => 'https://www.eubank.kz/',
+                    'company_id' => '6',
+                    'exchange_type_id' => '1',
+                    'currency_id' => null,
+                    'created_at' => $date
+                ],
+                [
+                    'url' => 'https://www.eubank.kz/',
+                    'company_id' => '6',
+                    'exchange_type_id' => '2',
+                    'currency_id' => null,
+                    'created_at' => $date
+                ],
+                [
+                    'url' => 'https://www.sberbank.kz/ru/individuals/rates/currencies',
+                    'company_id' => '7',
+                    'exchange_type_id' => '1',
+                    'currency_id' => null,
+                    'created_at' => $date
+                ],
+                [
+                    'url' => 'https://www.sberbank.kz/ru/individuals/rates/currencies',
+                    'company_id' => '7',
                     'exchange_type_id' => '3',
+                    'currency_id' => null,
+                    'created_at' => $date
+                ],
+                [
+                    'url' => 'https://kase.kz/ru/currency/',
+                    'company_id' => '8',
+                    'exchange_type_id' => '1',
                     'currency_id' => null,
                     'created_at' => $date
                 ],

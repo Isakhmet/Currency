@@ -4,11 +4,11 @@
 namespace App\Classes\Process\Parser\Cash;
 
 
-use App\Classes\Process\Contracts\AbstractDOMDocument;
+use App\Classes\Process\Contracts\AbstractDomDocument;
 use App\Classes\Process\Parser\ParserInterface;
 use Illuminate\Support\Facades\Log;
 
-class MigParser extends AbstractDOMDocument implements ParserInterface
+class MigParser extends AbstractDomDocument implements ParserInterface
 {
     private $selector = [
         'currency' => 'div.informer-additional table tbody tr td.currency',
