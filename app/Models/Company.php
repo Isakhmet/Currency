@@ -6,7 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Company
+ *
  * @package App\Models
+ * @property int $id
+ * @property string $name
+ * @property string $code
+ * @property string $type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CompanyLink[] $exchangeLinks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ExchangeRate[] $exchangeRates
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Company extends Model
 {

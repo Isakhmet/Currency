@@ -15,36 +15,59 @@ class GetCurrency extends Controller
 
         $banks = (new Company())->whereHas('exchangeRates', function ($query) {
             $query->where('exchange_type_id', 1);
-        })->where('type', 'bank')->get(['id']);
+        })->where('type', 'bank')->get(['id','name']);
 
 
-        $id = $banks->pluck('id')->toArray();
-        $exchange = ExchangeRate::whereIn('company_id', $id)
+        $ids = $banks->pluck('id')->toArray();
+
+        $exchanges = ExchangeRate::whereIn('company_id', $ids)
             ->where('exchange_type_id', 1)
+            ->orderBy('id', 'desc')
             ->get();
 
-        $currency = Currency::all(['id', 'name']);
+        $currencies = Currency::all(['id', 'name']);
 
-        $title = null;
-        foreach ($currency as $curr) {
-            $title[$curr->id] = $curr->name;
-        }
+        $currencies_titles = $currencies->pluck('name','id')->toArray();
 
-        $exchange_rate = null;
-        for ($i = 0; $i < count($banks); $i++) {
+        $exchange_rate = [];
 
-            $exchange_rate[$i]['name'] = $banks[$i]->name;
-            foreach ($exchange->where('company_id', $banks[$i]->id) as $ex) {
+        $exchange_companies = [];
 
-                $key = Str::lower($title[$ex->currency_id]);
-
-                $exchange_rate[$i]['updated_at'] = $ex->updated_at->format('d.m.Y');
-                $exchange_rate[$i][$key . '_buy'] = $ex->buy;
-                $exchange_rate[$i][$key . '_sell'] = $ex->sell;
+        foreach ($exchanges as $exchange){
+            if(!isset($exchange_companies[$exchange->company_id])){
+                $exchange_companies[$exchange->company_id] = [];
             }
+
+            if(isset($exchange_companies[$exchange->company_id][$exchange->currency_id])){
+                continue;
+            }
+
+            $exchange_companies[$exchange->company_id][$exchange->currency_id] = $exchange;
         }
 
-        return json_encode($exchange_rate);
+        foreach ($banks as $bank){
+
+            $current_company_exchanges = $exchange_companies[$bank->id];
+
+            $exchange_company_rate = [
+                'name' => $bank->name,
+                'updated_at' => null,
+            ];
+
+            $currency = [];
+            $currency['updated_at'] = null;
+
+            foreach ($current_company_exchanges as $currency_id => $currency){
+                $currency_title = Str::lower($currencies_titles[$currency_id]);
+                $exchange_company_rate[$currency_title. '_buy'] = $currency->buy;
+                $exchange_company_rate[$currency_title. '_sell'] = $currency->sell;
+            }
+
+            $exchange_company_rate['updated_at'] = $currency['updated_at']->format('d.m.Y');
+            $exchange_rate[] = $exchange_company_rate;
+        }
+
+        return $exchange_rate;
 
     }
 }

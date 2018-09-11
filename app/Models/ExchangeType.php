@@ -6,7 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ExchangeType
+ *
  * @package App\Models
+ * @property int $id
+ * @property string $title
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CompanyLink[] $exchangeLinks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ExchangeRate[] $exchangeRates
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExchangeType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExchangeType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExchangeType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExchangeType whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExchangeType whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ExchangeType extends Model
 {

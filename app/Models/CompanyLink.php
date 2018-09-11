@@ -6,7 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class CompanyLink
+ *
  * @package App\Models
+ * @property int $id
+ * @property string $url
+ * @property int $company_id
+ * @property int $exchange_type_id
+ * @property int|null $currency_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Currency|null $currency
+ * @property-read \App\Models\ExchangeType $exchangeType
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereExchangeTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CompanyLink whereUrl($value)
+ * @mixin \Eloquent
  */
 class CompanyLink extends Model
 {
