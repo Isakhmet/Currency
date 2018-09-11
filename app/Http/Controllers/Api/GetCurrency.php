@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
+use Illuminate\Support\Str;
 
 class GetCurrency extends Controller
 {
@@ -15,6 +16,7 @@ class GetCurrency extends Controller
         $banks = (new Company())->whereHas('exchangeRates', function ($query) {
             $query->where('exchange_type_id', 1);
         })->where('type', 'bank')->get(['id']);
+
 
         $id = $banks->pluck('id')->toArray();
         $exchange = ExchangeRate::whereIn('company_id', $id)
@@ -33,9 +35,12 @@ class GetCurrency extends Controller
 
             $exchange_rate[$i]['name'] = $banks[$i]->name;
             foreach ($exchange->where('company_id', $banks[$i]->id) as $ex) {
+
+                $key = Str::lower($title[$ex->currency_id]);
+
                 $exchange_rate[$i]['updated_at'] = $ex->updated_at->format('d.m.Y');
-                $exchange_rate[$i][mb_strtolower($title[$ex->currency_id]) . '_buy'] = $ex->buy;
-                $exchange_rate[$i][mb_strtolower($title[$ex->currency_id]) . '_sell'] = $ex->sell;
+                $exchange_rate[$i][$key . '_buy'] = $ex->buy;
+                $exchange_rate[$i][$key . '_sell'] = $ex->sell;
             }
         }
 

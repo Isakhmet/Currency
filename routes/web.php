@@ -14,5 +14,5 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('getCurrency','CurrencyController@post');
+Route::get('getCurrency','Api\GetCurrency@getAllBanks');
 
