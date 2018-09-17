@@ -15,4 +15,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('getCurrency','Api\GetCurrency@getAllBanks');
+Route::get('getExchange', 'Api\GetCurrency@getExchangeMig');
 

@@ -5,6 +5,7 @@ namespace App\Classes\Process\Support;
 
 
 use App\Classes\Process\Contracts\AbstractContextProcess;
+use App\Models\ExchangeDifference;
 
 class SaveProcess extends AbstractContextProcess
 {
@@ -15,9 +16,11 @@ class SaveProcess extends AbstractContextProcess
 
         $result = $context->getResults();
         $company_id = $context->getCompany()->id;
+        $company_code = $context->getCompany()->code;
         $exchange_rate = $context->getExchangeRateModel();
         $exchange_type_id = $context->getExchangeType()->id;
         $currency = $context->getCurrency();
+
         $keys = array_keys($result);
         foreach ($keys as $key) {
             if (!$context->getIsExchange()) {
@@ -38,7 +41,20 @@ class SaveProcess extends AbstractContextProcess
                     'is_exchange' => $context->getIsExchange()
                 ]);
             }
+
+
         }
+
+        if ($company_code == 'nbr') {
+
+            foreach ($keys as $key) {
+                $diff = ExchangeDifference::where('currency_id', $currency->where('name', $key)
+                    ->get(['id'])[0]->id)
+                    ->orderBy('id', 'desc');
+            }
+
+        }
+
         return $context;
     }
 
