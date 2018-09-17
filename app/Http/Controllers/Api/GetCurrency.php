@@ -7,18 +7,18 @@ use App\Models\Company;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class GetCurrency extends Controller
 {
-    public function getAllBanks() : array
+    public function getAllBanks(Request $request): array
     {
-
-        $banks = Company::whereHas('exchangeRates', function ($query) {
+        $banks = Company::whereHas('exchangeRates', function ($query) use ($request) {
             /**
              * @var $query \Illuminate\Database\Query\Builder
              */
-            $query->where('exchange_type_id', 1);
+            $query->where('exchange_type_id', $request->get('type'));
         })->where('type', 'bank')->get(['id','name']);
 
 
@@ -59,7 +59,7 @@ class GetCurrency extends Controller
             ];
 
             $currency = [];
-            $currency['updated_at'] = Carbon::now()->subMonth(1);
+            $currency['updated_at'] = Carbon::now();
 
             foreach ($current_company_exchanges as $currency_id => $currency){
                 $currency_title = Str::lower($currencies_titles[$currency_id]);
@@ -73,5 +73,28 @@ class GetCurrency extends Controller
 
         return $exchange_rate;
 
+    }
+
+    public function getExchangeMig()
+    {
+
+        $company = Company::where('code', 'mig')->get(['id', 'name']);
+
+        $exchanges = ExchangeRate::where('company_id', $company[0]->id)->orderBy('id', 'desc')->get(['currency_id', 'buy', 'sell', 'updated_at']);
+
+        $currencies = Currency::all(['id', 'name']);
+        $currencies_titles = $currencies->pluck('name', 'id');
+
+        $exchange_rate['name'] = $company[0]->name;
+        foreach ($exchanges as $exchange) {
+            if (!isset($exchange_rate['currencies'][$currencies_titles[$exchange->currency_id]])) {
+                $exchange_rate['updated_at'] = $exchange->updated_at->format('d.m.Y H:i');
+                $exchange_rate['currencies'][$currencies_titles[$exchange->currency_id]][] = $exchange->buy;
+                $exchange_rate['currencies'][$currencies_titles[$exchange->currency_id]][] = $exchange->sell;
+            }
+        }
+        $exchange_rate['currencies'] = array_reverse($exchange_rate['currencies']);
+
+        return $exchange_rate;
     }
 }
