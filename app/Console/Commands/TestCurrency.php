@@ -15,7 +15,7 @@ class TestCurrency extends Command
      *
      * @var string
      */
-    protected $signature = 'test:cur';
+    protected $signature = 'test:currency';
 
     /**
      * The console command description.

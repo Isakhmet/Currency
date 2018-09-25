@@ -19,7 +19,7 @@ class GetCurrency extends Controller
              * @var $query \Illuminate\Database\Query\Builder
              */
             $query->where('exchange_type_id', $request->get('type'));
-        })->where('type', 'bank')->get(['id','name']);
+        })->where('type', 'bank')->get(['id', 'name']);
 
 
         $ids = $banks->pluck('id')->toArray();
@@ -31,25 +31,25 @@ class GetCurrency extends Controller
 
         $currencies = Currency::all(['id', 'name']);
 
-        $currencies_titles = $currencies->pluck('name','id')->toArray();
+        $currencies_titles = $currencies->pluck('name', 'id')->toArray();
 
         $exchange_rate = [];
 
         $exchange_companies = [];
 
-        foreach ($exchanges as $exchange){
-            if(!isset($exchange_companies[$exchange->company_id])){
+        foreach ($exchanges as $exchange) {
+            if (!isset($exchange_companies[$exchange->company_id])) {
                 $exchange_companies[$exchange->company_id] = [];
             }
 
-            if(isset($exchange_companies[$exchange->company_id][$exchange->currency_id])){
+            if (isset($exchange_companies[$exchange->company_id][$exchange->currency_id])) {
                 continue;
             }
 
             $exchange_companies[$exchange->company_id][$exchange->currency_id] = $exchange;
         }
 
-        foreach ($banks as $bank){
+        foreach ($banks as $bank) {
 
             $current_company_exchanges = $exchange_companies[$bank->id];
 
@@ -61,10 +61,10 @@ class GetCurrency extends Controller
             $currency = [];
             $currency['updated_at'] = Carbon::now();
 
-            foreach ($current_company_exchanges as $currency_id => $currency){
+            foreach ($current_company_exchanges as $currency_id => $currency) {
                 $currency_title = Str::lower($currencies_titles[$currency_id]);
-                $exchange_company_rate[$currency_title. '_buy'] = $currency->buy;
-                $exchange_company_rate[$currency_title. '_sell'] = $currency->sell;
+                $exchange_company_rate[$currency_title . '_buy'] = $currency->buy;
+                $exchange_company_rate[$currency_title . '_sell'] = $currency->sell;
             }
 
             $exchange_company_rate['updated_at'] = $currency['updated_at']->format('d.m.Y');
@@ -97,4 +97,36 @@ class GetCurrency extends Controller
 
         return $exchange_rate;
     }
+
+    public function getGraphic(Request $request)
+    {
+        $currencies_title = Currency::all(['id', 'name'])->pluck('name', 'id');
+
+        $index = array_search(Str::upper($request->get('code')), $currencies_title->toArray());
+
+        $values = [];
+        if (is_numeric($index)) {
+
+            $exchange_rates = ExchangeRate::where([
+                'company_id' => 5,
+                'currency_id' => $index
+            ])
+                ->orderBy('updated_at', 'desc')
+                ->limit(10)
+                ->get(['currency_id', 'sell', 'updated_at']);
+
+
+            foreach ($exchange_rates as $exchange_rate) {
+                $values[$exchange_rate->updated_at->format('d.m')] = $exchange_rate->sell;
+            }
+
+            krsort($values);
+
+        } else {
+            echo 'Incorrect currency code';
+        }
+
+        return $values;
+    }
+
 }
