@@ -15,7 +15,6 @@ class SaveProcess extends AbstractContextProcess
 
         $result = $context->getResults();
         $company_id = $context->getCompany()->id;
-        $company_code = $context->getCompany()->code;
         $exchange_rate = $context->getExchangeRateModel();
         $exchange_type_id = $context->getExchangeType()->id;
         $currency = $context->getCurrency();
@@ -41,8 +40,6 @@ class SaveProcess extends AbstractContextProcess
                     'is_exchange' => $context->getIsExchange()
                 ]);
             }
-
-
         }
 
         return $context;
