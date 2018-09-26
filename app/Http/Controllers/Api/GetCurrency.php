@@ -6,26 +6,37 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
+use App\Models\ExchangeType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class GetCurrency extends Controller
 {
-    public function getAllBanks(Request $request): array
+    public function getAllBanks(Request $request, string $type): array
     {
-        $banks = Company::whereHas('exchangeRates', function ($query) use ($request) {
+        /** @var ExchangeType $exchange */
+        $exchange = ExchangeType::where('name', $type)->first();
+
+        if(!$$exchange){
+            return [
+                'status' => 'fail',
+                'message' => 'invalid type'
+            ];
+        }
+
+        $banks = Company::whereHas('exchangeRates', function ($query) use ($exchange) {
             /**
              * @var $query \Illuminate\Database\Query\Builder
              */
-            $query->where('exchange_type_id', $request->get('type'));
+            $query->where('exchange_type_id', $exchange->id);
         })->where('type', 'bank')->get(['id', 'name']);
 
 
         $ids = $banks->pluck('id')->toArray();
 
         $exchanges = ExchangeRate::whereIn('company_id', $ids)
-            ->where('exchange_type_id', 1)
+            ->where('exchange_type_id', $exchange->id)
             ->orderBy('id', 'desc')
             ->get();
 
