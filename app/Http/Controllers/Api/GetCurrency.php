@@ -135,7 +135,9 @@ class GetCurrency extends Controller
 
 
             foreach ($exchange_rates as $exchange_rate) {
-                $values[$exchange_rate->updated_at->format('d.m')] = $exchange_rate->sell;
+                if (!isset($values[$exchange_rate->updated_at->format('d.m')])) {
+                    $values[$exchange_rate->updated_at->format('d.m')] = $exchange_rate->sell;
+                }
             }
 
             krsort($values);
