@@ -125,12 +125,16 @@ class GetCurrency extends Controller
         $values = [];
         if (is_numeric($index)) {
 
+            $date = Carbon::now();
+            $date->subDay(10);
+            $date->format('Y-m-d 00:00:00');
+
             $exchange_rates = ExchangeRate::where([
                 'company_id' => 5,
                 'currency_id' => $index
             ])
+                ->where('updated_at', '>', $date)
                 ->orderBy('updated_at', 'desc')
-                ->limit(10)
                 ->get(['currency_id', 'sell', 'updated_at']);
 
 
