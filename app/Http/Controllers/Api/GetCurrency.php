@@ -18,7 +18,7 @@ class GetCurrency extends Controller
         /** @var ExchangeType $exchange */
         $exchange = ExchangeType::where('name', $type)->first();
 
-        if(!$$exchange){
+        if(!$exchange){
             return [
                 'status' => 'fail',
                 'message' => 'invalid type'
