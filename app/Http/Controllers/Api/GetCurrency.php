@@ -18,7 +18,7 @@ class GetCurrency extends Controller
         /** @var ExchangeType $exchange */
         $exchange = ExchangeType::where('name', $type)->first();
 
-        if(!$exchange){
+        if (!$exchange) {
             return [
                 'status' => 'fail',
                 'message' => 'invalid type'
@@ -109,11 +109,18 @@ class GetCurrency extends Controller
         return $exchange_rate;
     }
 
-    public function getGraphic(Request $request)
+    public function getGraphic(Request $request, string $code)
     {
-        $currencies_title = Currency::all(['id', 'name'])->pluck('name', 'id');
+        $currencies_title = Currency::all(['id', 'name'])->pluck('id', 'name');
 
-        $index = array_search(Str::upper($request->get('code')), $currencies_title->toArray());
+        if (!isset($currencies_title[$code])) {
+            return [
+                'status' => 'fail',
+                'message' => 'invalid code'
+            ];
+        }
+
+        $index = $currencies_title[$code];
 
         $values = [];
         if (is_numeric($index)) {
