@@ -66,6 +66,7 @@ class GetCurrency extends Controller
 
             $exchange_company_rate = [
                 'name' => $bank->name,
+                'bank_id' => $bank->id,
                 'updated_at' => null,
             ];
 
