@@ -115,10 +115,11 @@ class GetCurrency extends Controller
 
         $exchanges = ExchangeRate::where('company_id', 5)->orderBy('id', 'desc')->limit(84)->get(['currency_id', 'sell', 'created_at']);
 
-        $currencies = Currency::all(['id', 'name', 'count']);
+        $currencies = Currency::all(['id', 'name', 'title', 'count']);
 
-        $currencies_titles = $currencies->pluck('name', 'id');
+        $currencies_titles = $currencies->pluck('title', 'id');
         $currencies_count = $currencies->pluck('count', 'id');
+        $currencies_names = $currencies->pluck('name', 'id');
         $exchange_rate = [];
 
         $changes = [];
@@ -136,7 +137,8 @@ class GetCurrency extends Controller
         foreach ($exchanges as $exchange) {
 
             if (!isset($exchange_rate[$exchange->currency_id])) {
-                $exchange_rate[$exchange->currency_id]['name'] = $currencies_titles[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['title'] = $currencies_titles[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['name'] = $currencies_names[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['sell'] = $exchange->sell;
                 $exchange_rate[$exchange->currency_id]['count'] = $counts[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['change'] = $changes[$exchange->currency_id];
