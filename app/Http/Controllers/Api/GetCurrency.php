@@ -130,8 +130,6 @@ class GetCurrency extends Controller
             if ($val ?? false) {
                 $changes[$index] = number_format(($val[0]['sell'] - $val[1]['sell']), 2, ',', ' ');
             }
-
-            $counts[$index] = $currencies_count[$index];
         }
 
         foreach ($exchanges as $exchange) {
@@ -140,7 +138,7 @@ class GetCurrency extends Controller
                 $exchange_rate[$exchange->currency_id]['title'] = $currencies_titles[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['name'] = $currencies_names[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['sell'] = $exchange->sell;
-                $exchange_rate[$exchange->currency_id]['count'] = $counts[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['count'] = $currencies_count[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['change'] = $changes[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['created_at'] = $exchange->created_at->format('Y-m-d h:i:s');
             }
