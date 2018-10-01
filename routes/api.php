@@ -21,6 +21,7 @@ Route::group(['prefix'=>'v1'], function(){
     Route::get('currencies/{type}','Api\GetCurrency@getAllBanks')->where('type','cash|card|transfer');
     Route::get('exchanges', 'Api\GetCurrency@getExchangeMig');
     Route::get('trends/{code}', 'Api\GetCurrency@getGraphic');
+    Route::get('natBank', 'Api\GetCurrency@getNationalBankCurrency');
 });
 
 

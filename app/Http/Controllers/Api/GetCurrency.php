@@ -110,6 +110,43 @@ class GetCurrency extends Controller
         return $exchange_rate;
     }
 
+    public function getNationalBankCurrency()
+    {
+
+        $exchanges = ExchangeRate::where('company_id', 5)->orderBy('id', 'desc')->limit(84)->get(['currency_id', 'sell', 'created_at']);
+
+        $currencies = Currency::all(['id', 'name', 'title', 'count']);
+
+        $currencies_titles = $currencies->pluck('title', 'id');
+        $currencies_count = $currencies->pluck('count', 'id');
+        $currencies_names = $currencies->pluck('name', 'id');
+        $exchange_rate = [];
+
+        $changes = [];
+        $counts = [];
+        foreach ($currencies_titles as $index => $currencies_title) {
+            $val = array_values($exchanges->where('currency_id', $index)->toArray());
+
+            if ($val ?? false) {
+                $changes[$index] = number_format(($val[0]['sell'] - $val[1]['sell']), 2, ',', ' ');
+            }
+        }
+
+        foreach ($exchanges as $exchange) {
+
+            if (!isset($exchange_rate[$exchange->currency_id])) {
+                $exchange_rate[$exchange->currency_id]['title'] = $currencies_titles[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['name'] = $currencies_names[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['sell'] = $exchange->sell;
+                $exchange_rate[$exchange->currency_id]['count'] = $currencies_count[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['change'] = $changes[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['created_at'] = $exchange->created_at->format('Y-m-d h:i:s');
+            }
+        }
+        ksort($exchange_rate);
+        return $exchange_rate;
+    }
+
     public function getGraphic(Request $request, string $code)
     {
         $currencies_title = Currency::all(['id', 'name'])->pluck('id', 'name');
