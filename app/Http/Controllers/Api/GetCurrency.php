@@ -9,6 +9,7 @@ use App\Models\ExchangeRate;
 use App\Models\ExchangeType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class GetCurrency extends Controller
@@ -113,7 +114,7 @@ class GetCurrency extends Controller
     public function getNationalBankCurrency()
     {
 
-        $exchanges = ExchangeRate::where('company_id', 5)->orderBy('id', 'desc')->limit(84)->get(['currency_id', 'sell', 'created_at']);
+        $exchanges = ExchangeRate::where('company_id', 5)->orderBy('id', 'desc')->limit(42)->get(['currency_id', 'sell', 'created_at']);
 
         $currencies = Currency::all(['id', 'name', 'title', 'count']);
 
@@ -122,13 +123,24 @@ class GetCurrency extends Controller
         $currencies_names = $currencies->pluck('name', 'id');
         $exchange_rate = [];
 
-        $changes = [];
-        $counts = [];
-        foreach ($currencies_titles as $index => $currencies_title) {
-            $val = array_values($exchanges->where('currency_id', $index)->toArray());
+        $today = (new \DateTime())->format('Y-m-d 13:00:00');
+        $yesterday = (new \DateTime('-1 days'))->format('Y-m-d 13:00:00');
 
-            if ($val ?? false) {
-                $changes[$index] = number_format(($val[0]['sell'] - $val[1]['sell']), 2, ',', ' ');
+        $changes = [];
+        foreach ($currencies_titles as $index => $currencies_title) {
+
+            try {
+                $sell_yesterday = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
+                    ->where('created_at', '>=', $yesterday)->orderBy('id', 'asc')->first(['sell'])->sell;
+
+                $sell_today = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
+                    ->where('created_at', '>=', $today)->orderBy('id', 'asc')->first(['sell'])->sell;
+            } catch (\Exception $exception) {
+                Log::info($exception->getMessage());
+            }
+
+            if (($sell_yesterday ?? false) && ($sell_today ?? false)) {
+                $changes[$index] = number_format(($sell_today - $sell_yesterday), 2, ',', ' ');
             }
         }
 
