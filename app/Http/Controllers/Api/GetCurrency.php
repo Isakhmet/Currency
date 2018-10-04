@@ -208,6 +208,21 @@ class GetCurrency extends Controller
 
     public function getNationalBankForTelegramBot($date)
     {
+        $today = strtotime((new \DateTime())->format('Y-m-d'));
+
+        if (!strtotime($date)) {
+            return [
+                'status' => 'Ошибка',
+                'message' => "Не верно передано дата"
+            ];
+        }
+
+        if ($today < strtotime($date)) {
+            return [
+                'status' => 'Ошибка',
+                'message' => "Нету данных по этой дате $date"
+            ];
+        }
 
         $currencies_list = ['USD', 'EUR', 'RUB'];
 
@@ -253,17 +268,23 @@ class GetCurrency extends Controller
                 $response[$index]['price_buy'] = $exchange_rates[$id];
             }
         }
-
         return $response;
-
     }
 
     public function getAllBankForTelegramBot($bank_id)
     {
-
         $currencies_list = ['USD', 'EUR', 'RUB'];
 
         $currencies = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+
+        $companies = Company::where('type', 'bank')->get(['id', 'name'])->pluck('name', 'id')->toArray();
+
+        if (!isset($companies[$bank_id])) {
+            return [
+                'status' => 'fail',
+                'message' => 'invalid bank id'
+            ];
+        }
 
         $ids = [];
         $keys = array_keys($currencies);
