@@ -130,8 +130,12 @@ class GetCurrency extends Controller
         foreach ($currencies_titles as $index => $currencies_title) {
 
             try {
-                $sell_yesterday = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
-                    ->where('created_at', '>=', $yesterday)->orderBy('id', 'asc')->first(['sell'])->sell;
+                $sell_yesterday = ExchangeRate::where([
+                    ['created_at', '>=', $yesterday],
+                    ['created_at', '<', $today],
+                    ['company_id', '=', 5],
+                    ['currency_id', '=', $index]
+                ])->orderBy('id', 'asc')->first(['sell'])->sell;
 
                 $sell_today = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
                     ->where('created_at', '>=', $today)->orderBy('id', 'asc')->first(['sell'])->sell;
@@ -143,7 +147,6 @@ class GetCurrency extends Controller
                 $changes[$index] = number_format(($sell_today - $sell_yesterday), 2, ',', ' ');
             }
         }
-
         foreach ($exchanges as $exchange) {
 
             if (!isset($exchange_rate[$exchange->currency_id])) {
@@ -201,6 +204,119 @@ class GetCurrency extends Controller
         }
 
         return $values;
+    }
+
+    public function getNationalBankForTelegramBot($date)
+    {
+
+        $currencies_list = ['USD', 'EUR', 'RUB'];
+
+        $currencies_ids = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+
+        $yesterday = date('Y-m-d', strtotime('-1 day', strtotime($date)));
+
+        $ids = [];
+        $keys = array_keys($currencies_ids);
+        foreach ($keys as $currency_id) {
+            $ids[] = $currency_id;
+        }
+
+        $exchange_rates = ExchangeRate::where([
+            ['company_id', '=', 5],
+            ['created_at', '>=', $date]
+        ])->whereIn('currency_id', $ids)->pluck('sell', 'currency_id');
+
+        $response = [];
+        $changes = [];
+        foreach ($ids as $index => $id) {
+
+            $sell_yesterday = ExchangeRate::where([
+                ['company_id', '=', 5],
+                ['currency_id', '=', $id],
+                ['created_at', '>=', $yesterday],
+                ['created_at', '<', $date],
+            ])->orderBy('id', 'asc')->first(['sell'])->sell;
+
+            $sell_date = ExchangeRate::where([
+                ['company_id', '=', 5],
+                ['currency_id', '=', $id],
+                ['created_at', '>=', $date]
+            ])->orderBy('id', 'asc')->first(['sell'])->sell;
+
+            if (($sell_yesterday ?? false) && ($sell_date ?? false)) {
+                $changes[$index] = number_format(($sell_date - $sell_yesterday), 2, ',', ' ');
+            }
+
+            if (!isset($response[$index])) {
+                $response[$index]['valuta_id'] = $id;
+                $response[$index]['coefficient'] = $changes[$index];
+                $response[$index]['price_buy'] = $exchange_rates[$id];
+            }
+        }
+
+        return $response;
+
+    }
+
+    public function getAllBankForTelegramBot($bank_id)
+    {
+
+        $currencies_list = ['USD', 'EUR', 'RUB'];
+
+        $currencies = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+
+        $ids = [];
+        $keys = array_keys($currencies);
+        foreach ($keys as $key) {
+            $ids[] = $key;
+        }
+
+        $bank_currencies = ExchangeRate::where(['company_id' => $bank_id, 'exchange_type_id' => 1])
+            ->whereIn('currency_id', $ids)
+            ->orderBy('id', 'desc')
+            ->limit(3)
+            ->get(['currency_id', 'buy', 'sell'])
+            ->toArray();
+
+        $response = [];
+        foreach ($bank_currencies as $index => $currency) {
+
+            $title = Str::lower($currencies[$currency['currency_id']]);
+
+            $response[$title . '_bay'] = $currency['buy'];
+            $response[$title . '_sale'] = $currency['sell'];
+
+        }
+        return $response;
+    }
+
+    public function getMigForTelegramBot()
+    {
+
+        $currencies_list = ['USD', 'EUR', 'RUB'];
+
+        $currencies = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+
+        $ids = array_keys($currencies);
+
+        $bank_currencies = ExchangeRate::where(['company_id' => 2, 'exchange_type_id' => 1])
+            ->whereIn('currency_id', $ids)
+            ->orderBy('id', 'desc')
+            ->limit(6)
+            ->get(['currency_id', 'buy', 'sell']);
+
+        $response = [];
+        foreach ($currencies as $index => $currency) {
+
+            $currency_info = array_values($bank_currencies->where('currency_id', $index)->toArray());
+
+            $response['courses'][$currency]['buy'] = $currency_info[0]['buy'];
+            $response['courses'][$currency]['old_buy'] = $currency_info[1]['buy'];
+            $response['courses'][$currency]['sell'] = $currency_info[0]['sell'];
+            $response['courses'][$currency]['old_sell'] = $currency_info[1]['sell'];
+        }
+
+        return $response;
     }
 
 }

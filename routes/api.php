@@ -22,6 +22,9 @@ Route::group(['prefix'=>'v1'], function(){
     Route::get('exchanges', 'Api\GetCurrency@getExchangeMig');
     Route::get('trends/{code}', 'Api\GetCurrency@getGraphic');
     Route::get('natBank', 'Api\GetCurrency@getNationalBankCurrency');
+    Route::get('tgBotNatBank/{date}', 'Api\GetCurrency@getNationalBankForTelegramBot');
+    Route::get('tgBotAllBank/{type}', 'Api\GetCurrency@getAllBankForTelegramBot');
+    Route::get('tgBotMig', 'Api\GetCurrency@getMigForTelegramBot');
 });
 
 
