@@ -123,33 +123,33 @@ class GetCurrency extends Controller
         $currencies_names = $currencies->pluck('name', 'id');
         $exchange_rate = [];
 
-        $today = (new \DateTime())->format('Y-m-d 13:00:00');
-        $yesterday = (new \DateTime('-1 days'))->format('Y-m-d 13:00:00');
-
         $changes = [];
         foreach ($currencies_titles as $index => $currencies_title) {
 
             try {
-                $sell_yesterday = ExchangeRate::where([
-                    ['created_at', '>=', $yesterday],
-                    ['created_at', '<', $today],
+                $yesterday = ExchangeRate::where([
+                    ['created_at', '>=', (new \DateTime('-1 days'))->format('Y-m-d 13:00:00')],
+                    ['created_at', '<', (new \DateTime())->format('Y-m-d 13:00:00')],
                     ['company_id', '=', 5],
                     ['currency_id', '=', $index]
-                ])->orderBy('id', 'asc')->first(['sell'])->sell;
+                ])->orderBy('id', 'asc')->first(['sell']);
 
-                $sell_today = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
-                    ->where('created_at', '>=', $today)->orderBy('id', 'asc')->first(['sell'])->sell;
+                $today = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
+                    ->where('created_at', '>', (new \DateTime())->format('Y-m-d'))
+                    ->orderBy('id', 'desc')->first(['sell']);
+                //dd($sell_today);
             } catch (\Exception $exception) {
                 Log::info($exception->getMessage());
             }
 
-            if (($sell_yesterday ?? false) && ($sell_today ?? false)) {
-                $changes[$index] = number_format(($sell_today - $sell_yesterday), 2, ',', ' ');
+            if (($yesterday->sell ?? false) && ($today->sell ?? false)) {
+                $changes[$index] = number_format(($today->sell - $yesterday->sell), 2, ',', ' ');
             }
         }
+
         foreach ($exchanges as $exchange) {
 
-            if (!isset($exchange_rate[$exchange->currency_id])) {
+            if (!isset($exchange_rate[$exchange->currency_id]) && isset($changes[$exchange->currency_id])) {
                 $exchange_rate[$exchange->currency_id]['title'] = $currencies_titles[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['name'] = $currencies_names[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['sell'] = $exchange->sell;
