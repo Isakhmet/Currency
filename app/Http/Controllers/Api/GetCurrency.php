@@ -148,7 +148,7 @@ class GetCurrency extends Controller
             }
 
             if (($sell_yesterday->sell ?? false) && ($sell_today->sell ?? false)) {
-                $changes[$index] = number_format(($sell_today->sell - $sell_yesterday->sell), 2, ',', ' ');
+                $changes[$index] = number_format(($sell_today->sell - $sell_yesterday->sell), 2, '.', ' ');
             }
         }
 
