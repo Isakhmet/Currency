@@ -264,7 +264,7 @@ class GetCurrency extends Controller
             ])->orderBy('id', 'asc')->first(['sell'])->sell;
 
             if (($sell_yesterday ?? false) && ($sell_date ?? false)) {
-                $changes[$index] = number_format(($sell_date - $sell_yesterday), 2, ',', ' ');
+                $changes[$index] = number_format(($sell_date - $sell_yesterday), 2, '.', ' ');
             }
 
             if (!isset($response[$index])) {
