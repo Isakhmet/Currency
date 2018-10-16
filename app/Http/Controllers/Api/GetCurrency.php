@@ -71,16 +71,17 @@ class GetCurrency extends Controller
                 'updated_at' => null,
             ];
 
-            $currency = [];
-            $currency['updated_at'] = Carbon::now();
-
             foreach ($current_company_exchanges as $currency_id => $currency) {
+
+                if (!isset($exchange_company_rate['updated_at'])) {
+                    $exchange_company_rate['updated_at'] = $currency->updated_at->format('d.m.Y H:i:s');
+                }
+
                 $currency_title = Str::lower($currencies_titles[$currency_id]);
                 $exchange_company_rate[$currency_title . '_buy'] = $currency->buy;
                 $exchange_company_rate[$currency_title . '_sell'] = $currency->sell;
             }
 
-            $exchange_company_rate['updated_at'] = $currency['updated_at']->format('d.m.Y');
             $exchange_rate[] = $exchange_company_rate;
         }
 
