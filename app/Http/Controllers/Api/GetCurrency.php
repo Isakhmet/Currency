@@ -71,16 +71,17 @@ class GetCurrency extends Controller
                 'updated_at' => null,
             ];
 
-            $currency = [];
-            $currency['updated_at'] = Carbon::now();
-
             foreach ($current_company_exchanges as $currency_id => $currency) {
+
+                if (!isset($exchange_company_rate['updated_at'])) {
+                    $exchange_company_rate['updated_at'] = $currency->updated_at->format('d.m.Y H:i:s');
+                }
+
                 $currency_title = Str::lower($currencies_titles[$currency_id]);
                 $exchange_company_rate[$currency_title . '_buy'] = $currency->buy;
                 $exchange_company_rate[$currency_title . '_sell'] = $currency->sell;
             }
 
-            $exchange_company_rate['updated_at'] = $currency['updated_at']->format('d.m.Y');
             $exchange_rate[] = $exchange_company_rate;
         }
 
@@ -123,7 +124,8 @@ class GetCurrency extends Controller
         $currencies_names = $currencies->pluck('name', 'id');
         $exchange_rate = [];
 
-        $today = (new \DateTime())->format('Y-m-d 13:00:00');
+        $today = (new \DateTime())->format('Y-m-d');
+        $limit = (new \DateTime())->format('Y-m-d 13:00:00');
         $yesterday = (new \DateTime('-1 days'))->format('Y-m-d 13:00:00');
 
         $changes = [];
@@ -132,24 +134,28 @@ class GetCurrency extends Controller
             try {
                 $sell_yesterday = ExchangeRate::where([
                     ['created_at', '>=', $yesterday],
-                    ['created_at', '<', $today],
+                    ['created_at', '<', $limit],
                     ['company_id', '=', 5],
                     ['currency_id', '=', $index]
-                ])->orderBy('id', 'asc')->first(['sell'])->sell;
+                ])->orderBy('id', 'asc')->first(['sell']);
 
                 $sell_today = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
-                    ->where('created_at', '>=', $today)->orderBy('id', 'asc')->first(['sell'])->sell;
+                    ->where('created_at', '>', $today)
+                    ->orderBy('id', 'desc')
+                    ->first(['sell']);
+
             } catch (\Exception $exception) {
                 Log::info($exception->getMessage());
             }
 
-            if (($sell_yesterday ?? false) && ($sell_today ?? false)) {
-                $changes[$index] = number_format(($sell_today - $sell_yesterday), 2, ',', ' ');
+            if (($sell_yesterday->sell ?? false) && ($sell_today->sell ?? false)) {
+                $changes[$index] = number_format(($sell_today->sell - $sell_yesterday->sell), 2, '.', ' ');
             }
         }
+
         foreach ($exchanges as $exchange) {
 
-            if (!isset($exchange_rate[$exchange->currency_id])) {
+            if (!isset($exchange_rate[$exchange->currency_id]) && isset($changes[$exchange->currency_id])) {
                 $exchange_rate[$exchange->currency_id]['title'] = $currencies_titles[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['name'] = $currencies_names[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['sell'] = $exchange->sell;
@@ -259,7 +265,7 @@ class GetCurrency extends Controller
             ])->orderBy('id', 'asc')->first(['sell'])->sell;
 
             if (($sell_yesterday ?? false) && ($sell_date ?? false)) {
-                $changes[$index] = number_format(($sell_date - $sell_yesterday), 2, ',', ' ');
+                $changes[$index] = number_format(($sell_date - $sell_yesterday), 2, '.', ' ');
             }
 
             if (!isset($response[$index])) {
