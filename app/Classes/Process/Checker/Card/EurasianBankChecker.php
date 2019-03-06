@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Log;
 class EurasianBankChecker extends AbstractDomDocument implements CheckerInterface
 {
     private $selector = [
-        'structure' => 'div.exchange table',
-        'date' => 'div.exchange div.date'
+        'structure' => 'table.exchange-table',
+        'date' => 'div.exchanges-date'
     ];
 
     /**
@@ -31,20 +31,20 @@ class EurasianBankChecker extends AbstractDomDocument implements CheckerInterfac
             $date[] = preg_replace("/[^0-9\.]/", '', $node->nodeValue);
         }
 
-        $currency_date = $date[4];
+        $currency_date = $date[0];
         $today = (new \DateTime())->format('d.m.Y');
 
         if (strtotime($currency_date) != strtotime($today)) {
             throw new \RuntimeException('Евразийский банк. Проверка не прошла. Даты не совпадают');
         }
 
-        $var = preg_replace("/[^0-9A-Z\n\,]/", '', $elements[0]->item(3)->nodeValue);
-        $var = preg_replace("/[\,]/", ".", $var);
+        $var = preg_replace("/[^0-9A-Z\n\.]/", '', $elements[0]->item(0)->nodeValue);
+        //$var = preg_replace("/[\,]/", ".", $var);
         $currency_info = explode("\n", $var);
         $currency_info = array_values(array_diff($currency_info, ['']));
 
         $count = 0;
-        for ($i = 0; $i < count($currency_info); $i += 3) {
+        for ($i = 0; $i < count($currency_info); $i += 2) {
             $currency = Currency::where('name', $currency_info[$i])->get();
 
             if (!$currency) {

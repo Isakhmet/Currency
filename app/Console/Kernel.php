@@ -4,6 +4,7 @@ namespace App\Console;
 
 // use App\Console\Commands\TestCurrency;
 use App\Console\Commands\TestCurrency;
+use App\Console\Commands\TestParser;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,7 +17,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-         TestCurrency::class
+        TestCurrency::class,
+        TestParser::class
     ];
 
     /**

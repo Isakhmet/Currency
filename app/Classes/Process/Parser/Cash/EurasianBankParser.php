@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class EurasianBankParser extends AbstractDomDocument implements ParserInterface
 {
-    private $selector = 'div.exchange table';
+    private $selector = 'table.exchange-table';
 
     /**
      * @param string $data
@@ -25,15 +25,22 @@ class EurasianBankParser extends AbstractDomDocument implements ParserInterface
 
             $elements = (new EurasianBankParser())->getDocument($data, $this->selector);
 
-            $var = preg_replace("/[^0-9A-Z\n\,]/", '', $elements->item(0)->nodeValue);
-            $var = preg_replace("/[\,]/", ".", $var);
+            $var = preg_replace("/[^0-9A-Z\n\.]/", '', $elements->item(0)->nodeValue);
             $currency_info = explode("\n", $var);
             $currency_info = array_values(array_diff($currency_info, ['']));
 
-            for ($i = 0; $i < count($currency_info); $i += 3) {
+            for ($i = 0; $i < count($currency_info); $i += 2) {
                 $exchange[$currency_info[$i]][] = $currency_info[$i + 1];
-                $exchange[$currency_info[$i]][] = $currency_info[$i + 2];
             }
+
+            $var = preg_replace("/[^0-9A-Z\n\.]/", '', $elements->item(1)->nodeValue);
+            $currency_info = explode("\n", $var);
+            $currency_info = array_values(array_diff($currency_info, ['']));
+
+            for ($i = 0; $i < count($currency_info); $i += 2) {
+                $exchange[$currency_info[$i]][] = $currency_info[$i + 1];
+            }
+
         } catch (\Exception $exception) {
             Log::error($exception->getMessage(), [$exception->getLine(), $exception->getFile()]);
         }
