@@ -12,38 +12,61 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+/**
+ * Class GetCurrency
+ *
+ * @package App\Http\Controllers\Api
+ */
 class GetCurrency extends Controller
 {
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $type
+     *
+     * @return array
+     */
     public function getAllBanks(Request $request, string $type): array
     {
         /** @var ExchangeType $exchange */
-        $exchange = ExchangeType::where('name', $type)->first();
+        $exchange = ExchangeType::where('name', $type)
+                                ->first()
+        ;
 
         if (!$exchange) {
             return [
-                'status' => 'fail',
-                'message' => 'invalid type'
+                'status'  => 'fail',
+                'message' => 'invalid type',
             ];
         }
 
-        $banks = Company::whereHas('exchangeRates', function ($query) use ($exchange) {
+        $banks = Company::whereHas(
+            'exchangeRates', function ($query) use ($exchange) {
             /**
              * @var $query \Illuminate\Database\Query\Builder
              */
             $query->where('exchange_type_id', $exchange->id);
-        })->where('type', 'bank')->get(['id', 'name']);
+        }
+        )
+                        ->where('type', 'bank')
+                        ->get(['id', 'name'])
+        ;
 
 
-        $ids = $banks->pluck('id')->toArray();
+        $ids = $banks->pluck('id')
+                     ->toArray()
+        ;
 
         $exchanges = ExchangeRate::whereIn('company_id', $ids)
-            ->where('exchange_type_id', $exchange->id)
-            ->orderBy('id', 'desc')
-            ->get();
+                                 ->where('exchange_type_id', $exchange->id)
+                                 ->orderBy('id', 'desc')
+                                 ->get()
+        ;
 
         $currencies = Currency::all(['id', 'name']);
 
-        $currencies_titles = $currencies->pluck('name', 'id')->toArray();
+        $currencies_titles = $currencies->pluck('name', 'id')
+                                        ->toArray()
+        ;
 
         $exchange_rate = [];
 
@@ -66,8 +89,8 @@ class GetCurrency extends Controller
             $current_company_exchanges = $exchange_companies[$bank->id];
 
             $exchange_company_rate = [
-                'name' => $bank->name,
-                'bank_id' => $bank->id,
+                'name'       => $bank->name,
+                'bank_id'    => $bank->id,
                 'updated_at' => null,
             ];
 
@@ -77,8 +100,8 @@ class GetCurrency extends Controller
                     $exchange_company_rate['updated_at'] = $currency->updated_at->format('d.m.Y H:i:s');
                 }
 
-                $currency_title = Str::lower($currencies_titles[$currency_id]);
-                $exchange_company_rate[$currency_title . '_buy'] = $currency->buy;
+                $currency_title                                   = Str::lower($currencies_titles[$currency_id]);
+                $exchange_company_rate[$currency_title . '_buy']  = $currency->buy;
                 $exchange_company_rate[$currency_title . '_sell'] = $currency->sell;
             }
 
@@ -89,20 +112,34 @@ class GetCurrency extends Controller
 
     }
 
+    /**
+     * @return mixed
+     */
     public function getExchangeMig()
     {
-
-        $company = Company::where('code', 'mig')->get(['id', 'name']);
-
-        $exchanges = ExchangeRate::where('company_id', $company[0]->id)->orderBy('id', 'desc')->get(['currency_id', 'buy', 'sell', 'updated_at']);
-
-        $currencies = Currency::all(['id', 'name']);
-        $currencies_titles = $currencies->pluck('name', 'id');
-
+        $lastData              = ExchangeRate::orderBy('created_at', 'desc')
+                                             ->limit(1)
+                                             ->get(['created_at'])
+                                             ->toArray()
+        ;
+        $date                  = Str::substr($lastData[0]['created_at'], 0, 10) . " 00:00:00";
+        $company               = Company::where('code', 'mig')
+                                        ->get(['id', 'name'])
+        ;
+        $exchanges             = ExchangeRate::where('company_id', $company[0]->id)
+                                             ->where('created_at', '>=', $date)
+                                             ->orderBy('id', 'desc')
+                                             ->get(['currency_id', 'buy', 'sell', 'updated_at'])
+        ;
+        $currencies            = Currency::all(['id', 'name']);
+        $currencies_titles     = $currencies->pluck('name', 'id');
         $exchange_rate['name'] = $company[0]->name;
+
         foreach ($exchanges as $exchange) {
             if (!isset($exchange_rate['currencies'][$currencies_titles[$exchange->currency_id]])) {
-                $exchange_rate['updated_at'] = $exchange->updated_at->format('d.m.Y H:i');
+                $exchange_rate['updated_at']                                               = $exchange->updated_at->format(
+                    'd.m.Y H:i'
+                );
                 $exchange_rate['currencies'][$currencies_titles[$exchange->currency_id]][] = $exchange->buy;
                 $exchange_rate['currencies'][$currencies_titles[$exchange->currency_id]][] = $exchange->sell;
             }
@@ -112,37 +149,50 @@ class GetCurrency extends Controller
         return $exchange_rate;
     }
 
+    /**
+     * @return array
+     */
     public function getNationalBankCurrency()
     {
 
-        $exchanges = ExchangeRate::where('company_id', 5)->orderBy('id', 'desc')->limit(42)->get(['currency_id', 'sell', 'created_at']);
+        $exchanges = ExchangeRate::where('company_id', 5)
+                                 ->orderBy('id', 'desc')
+                                 ->limit(42)
+                                 ->get(['currency_id', 'sell', 'created_at'])
+        ;
 
         $currencies = Currency::all(['id', 'name', 'title', 'count']);
 
         $currencies_titles = $currencies->pluck('title', 'id');
-        $currencies_count = $currencies->pluck('count', 'id');
-        $currencies_names = $currencies->pluck('name', 'id');
-        $exchange_rate = [];
+        $currencies_count  = $currencies->pluck('count', 'id');
+        $currencies_names  = $currencies->pluck('name', 'id');
+        $exchange_rate     = [];
 
-        $today = (new \DateTime())->format('Y-m-d');
-        $limit = (new \DateTime())->format('Y-m-d 13:00:00');
+        $today     = (new \DateTime())->format('Y-m-d');
+        $limit     = (new \DateTime())->format('Y-m-d 13:00:00');
         $yesterday = (new \DateTime('-1 days'))->format('Y-m-d 13:00:00');
 
         $changes = [];
         foreach ($currencies_titles as $index => $currencies_title) {
 
             try {
-                $sell_yesterday = ExchangeRate::where([
-                    ['created_at', '>=', $yesterday],
-                    ['created_at', '<', $limit],
-                    ['company_id', '=', 5],
-                    ['currency_id', '=', $index]
-                ])->orderBy('id', 'asc')->first(['sell']);
+                $sell_yesterday = ExchangeRate::where(
+                    [
+                        ['created_at', '>=', $yesterday],
+                        ['created_at', '<', $limit],
+                        ['company_id', '=', 5],
+                        ['currency_id', '=', $index],
+                    ]
+                )
+                                              ->orderBy('id', 'asc')
+                                              ->first(['sell'])
+                ;
 
                 $sell_today = ExchangeRate::where(['company_id' => 5, 'currency_id' => $index])
-                    ->where('created_at', '>', $today)
-                    ->orderBy('id', 'desc')
-                    ->first(['sell']);
+                                          ->where('created_at', '>', $today)
+                                          ->orderBy('id', 'desc')
+                                          ->first(['sell'])
+                ;
 
             } catch (\Exception $exception) {
                 Log::info($exception->getMessage());
@@ -156,26 +206,35 @@ class GetCurrency extends Controller
         foreach ($exchanges as $exchange) {
 
             if (!isset($exchange_rate[$exchange->currency_id]) && isset($changes[$exchange->currency_id])) {
-                $exchange_rate[$exchange->currency_id]['title'] = $currencies_titles[$exchange->currency_id];
-                $exchange_rate[$exchange->currency_id]['name'] = $currencies_names[$exchange->currency_id];
-                $exchange_rate[$exchange->currency_id]['sell'] = $exchange->sell;
-                $exchange_rate[$exchange->currency_id]['count'] = $currencies_count[$exchange->currency_id];
-                $exchange_rate[$exchange->currency_id]['change'] = $changes[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['title']      = $currencies_titles[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['name']       = $currencies_names[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['sell']       = $exchange->sell;
+                $exchange_rate[$exchange->currency_id]['count']      = $currencies_count[$exchange->currency_id];
+                $exchange_rate[$exchange->currency_id]['change']     = $changes[$exchange->currency_id];
                 $exchange_rate[$exchange->currency_id]['created_at'] = $exchange->created_at->format('Y-m-d h:i:s');
             }
         }
         ksort($exchange_rate);
+
         return $exchange_rate;
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $code
+     *
+     * @return array
+     */
     public function getGraphic(Request $request, string $code)
     {
-        $currencies_title = Currency::all(['id', 'name'])->pluck('id', 'name');
+        $currencies_title = Currency::all(['id', 'name'])
+                                    ->pluck('id', 'name')
+        ;
 
         if (!isset($currencies_title[$code])) {
             return [
-                'status' => 'fail',
-                'message' => 'invalid code'
+                'status'  => 'fail',
+                'message' => 'invalid code',
             ];
         }
 
@@ -188,13 +247,16 @@ class GetCurrency extends Controller
             $date->subDay(10);
             $date->format('Y-m-d 00:00:00');
 
-            $exchange_rates = ExchangeRate::where([
-                'company_id' => 5,
-                'currency_id' => $index
-            ])
-                ->where('updated_at', '>', $date)
-                ->orderBy('updated_at', 'desc')
-                ->get(['currency_id', 'sell', 'updated_at']);
+            $exchange_rates = ExchangeRate::where(
+                [
+                    'company_id'  => 5,
+                    'currency_id' => $index,
+                ]
+            )
+                                          ->where('updated_at', '>', $date)
+                                          ->orderBy('updated_at', 'desc')
+                                          ->get(['currency_id', 'sell', 'updated_at'])
+            ;
 
 
             foreach ($exchange_rates as $exchange_rate) {
@@ -212,134 +274,185 @@ class GetCurrency extends Controller
         return $values;
     }
 
+    /**
+     * @param $date
+     *
+     * @return array
+     */
     public function getNationalBankForTelegramBot($date)
     {
         $today = strtotime((new \DateTime())->format('Y-m-d'));
 
         if (!strtotime($date)) {
             return [
-                'status' => 'Ошибка',
-                'message' => "Не верно передано дата"
+                'status'  => 'Ошибка',
+                'message' => "Не верно передано дата",
             ];
         }
 
         if ($today < strtotime($date)) {
             return [
-                'status' => 'Ошибка',
-                'message' => "Нету данных по этой дате $date"
+                'status'  => 'Ошибка',
+                'message' => "Нету данных по этой дате $date",
             ];
         }
 
         $currencies_list = ['USD', 'EUR', 'RUB'];
 
-        $currencies_ids = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+        $currencies_ids = Currency::whereIn('name', $currencies_list)
+                                  ->get(['id', 'name'])
+                                  ->pluck('name', 'id')
+                                  ->toArray()
+        ;
 
         $yesterday = date('Y-m-d', strtotime('-1 day', strtotime($date)));
 
-        $ids = [];
+        $ids  = [];
         $keys = array_keys($currencies_ids);
         foreach ($keys as $currency_id) {
             $ids[] = $currency_id;
         }
 
-        $exchange_rates = ExchangeRate::where([
-            ['company_id', '=', 5],
-            ['created_at', '>=', $date]
-        ])->whereIn('currency_id', $ids)->pluck('sell', 'currency_id');
+        $exchange_rates = ExchangeRate::where(
+            [
+                ['company_id', '=', 5],
+                ['created_at', '>=', $date],
+            ]
+        )
+                                      ->whereIn('currency_id', $ids)
+                                      ->pluck('sell', 'currency_id')
+        ;
 
         $response = [];
-        $changes = [];
+        $changes  = [];
         foreach ($ids as $index => $id) {
 
-            $sell_yesterday = ExchangeRate::where([
-                ['company_id', '=', 5],
-                ['currency_id', '=', $id],
-                ['created_at', '>=', $yesterday],
-                ['created_at', '<', $date],
-            ])->orderBy('id', 'asc')->first(['sell'])->sell;
+            $sell_yesterday = ExchangeRate::where(
+                [
+                    ['company_id', '=', 5],
+                    ['currency_id', '=', $id],
+                    ['created_at', '>=', $yesterday],
+                    ['created_at', '<', $date],
+                ]
+            )
+                                          ->orderBy('id', 'asc')
+                                          ->first(['sell'])->sell
+            ;
 
-            $sell_date = ExchangeRate::where([
-                ['company_id', '=', 5],
-                ['currency_id', '=', $id],
-                ['created_at', '>=', $date]
-            ])->orderBy('id', 'asc')->first(['sell'])->sell;
+            $sell_date = ExchangeRate::where(
+                [
+                    ['company_id', '=', 5],
+                    ['currency_id', '=', $id],
+                    ['created_at', '>=', $date],
+                ]
+            )
+                                     ->orderBy('id', 'asc')
+                                     ->first(['sell'])->sell
+            ;
 
             if (($sell_yesterday ?? false) && ($sell_date ?? false)) {
                 $changes[$index] = number_format(($sell_date - $sell_yesterday), 2, '.', ' ');
             }
 
             if (!isset($response[$index])) {
-                $response[$index]['valuta_id'] = $id;
+                $response[$index]['valuta_id']   = $id;
                 $response[$index]['coefficient'] = $changes[$index];
-                $response[$index]['price_buy'] = $exchange_rates[$id];
+                $response[$index]['price_buy']   = $exchange_rates[$id];
             }
         }
+
         return $response;
     }
 
+    /**
+     * @param $bank_id
+     *
+     * @return array
+     */
     public function getAllBankForTelegramBot($bank_id)
     {
         $currencies_list = ['USD', 'EUR', 'RUB'];
 
-        $currencies = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+        $currencies = Currency::whereIn('name', $currencies_list)
+                              ->get(['id', 'name'])
+                              ->pluck('name', 'id')
+                              ->toArray()
+        ;
 
-        $companies = Company::where('type', 'bank')->get(['id', 'name'])->pluck('name', 'id')->toArray();
+        $companies = Company::where('type', 'bank')
+                            ->get(['id', 'name'])
+                            ->pluck('name', 'id')
+                            ->toArray()
+        ;
 
         if (!isset($companies[$bank_id])) {
             return [
-                'status' => 'fail',
-                'message' => 'invalid bank id'
+                'status'  => 'fail',
+                'message' => 'invalid bank id',
             ];
         }
 
-        $ids = [];
+        $ids  = [];
         $keys = array_keys($currencies);
         foreach ($keys as $key) {
             $ids[] = $key;
         }
 
         $bank_currencies = ExchangeRate::where(['company_id' => $bank_id, 'exchange_type_id' => 1])
-            ->whereIn('currency_id', $ids)
-            ->orderBy('id', 'desc')
-            ->limit(3)
-            ->get(['currency_id', 'buy', 'sell'])
-            ->toArray();
+                                       ->whereIn('currency_id', $ids)
+                                       ->orderBy('id', 'desc')
+                                       ->limit(3)
+                                       ->get(['currency_id', 'buy', 'sell'])
+                                       ->toArray()
+        ;
 
         $response = [];
         foreach ($bank_currencies as $index => $currency) {
 
             $title = Str::lower($currencies[$currency['currency_id']]);
 
-            $response[$title . '_bay'] = $currency['buy'];
+            $response[$title . '_bay']  = $currency['buy'];
             $response[$title . '_sale'] = $currency['sell'];
 
         }
+
         return $response;
     }
 
+    /**
+     * @return array
+     */
     public function getMigForTelegramBot()
     {
 
         $currencies_list = ['USD', 'EUR', 'RUB'];
 
-        $currencies = Currency::whereIn('name', $currencies_list)->get(['id', 'name'])->pluck('name', 'id')->toArray();
+        $currencies = Currency::whereIn('name', $currencies_list)
+                              ->get(['id', 'name'])
+                              ->pluck('name', 'id')
+                              ->toArray()
+        ;
 
         $ids = array_keys($currencies);
 
         $bank_currencies = ExchangeRate::where(['company_id' => 2, 'exchange_type_id' => 1])
-            ->whereIn('currency_id', $ids)
-            ->orderBy('id', 'desc')
-            ->limit(6)
-            ->get(['currency_id', 'buy', 'sell']);
+                                       ->whereIn('currency_id', $ids)
+                                       ->orderBy('id', 'desc')
+                                       ->limit(6)
+                                       ->get(['currency_id', 'buy', 'sell'])
+        ;
 
         $response = [];
         foreach ($currencies as $index => $currency) {
 
-            $currency_info = array_values($bank_currencies->where('currency_id', $index)->toArray());
+            $currency_info = array_values(
+                $bank_currencies->where('currency_id', $index)
+                                ->toArray()
+            );
 
-            $response['courses'][$currency]['buy'] = $currency_info[0]['buy'];
-            $response['courses'][$currency]['old_buy'] = $currency_info[1]['buy'];
-            $response['courses'][$currency]['sell'] = $currency_info[0]['sell'];
+            $response['courses'][$currency]['buy']      = $currency_info[0]['buy'];
+            $response['courses'][$currency]['old_buy']  = $currency_info[1]['buy'];
+            $response['courses'][$currency]['sell']     = $currency_info[0]['sell'];
             $response['courses'][$currency]['old_sell'] = $currency_info[1]['sell'];
         }
 
